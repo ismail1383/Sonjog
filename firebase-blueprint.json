@@ -1,0 +1,178 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Private user account profile containing PII (email) and app preferences.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Firebase Auth UID of the user." },
+        "displayName": { "type": "string", "description": "Display name shown in chats." },
+        "email": { "type": "string", "description": "Google account email address (private PII)." },
+        "about": { "type": "string", "description": "Short bio or status tagline." },
+        "avatarUrl": { "type": "string", "description": "Optional Google profile photo URL." },
+        "avatarBase64": { "type": "string", "description": "Optional compressed Base64 custom avatar." },
+        "language": { "type": "string", "enum": ["bn", "en"], "description": "Preferred UI language." },
+        "isOnline": { "type": "boolean", "description": "Whether the user is currently active." },
+        "lastSeen": { "type": "string", "format": "date-time", "description": "Server timestamp of last activity." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation server timestamp." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Update server timestamp." }
+      },
+      "required": ["userId", "displayName", "email", "language", "isOnline", "createdAt", "updatedAt"]
+    },
+    "DirectoryUser": {
+      "title": "DirectoryUser",
+      "description": "Publicly searchable chat directory entry with zero PII.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Firebase Auth UID." },
+        "displayName": { "type": "string", "description": "Public display name." },
+        "searchName": { "type": "string", "description": "Lowercase display name for search." },
+        "about": { "type": "string", "description": "Public bio tagline." },
+        "avatarUrl": { "type": "string", "description": "Optional avatar URL." },
+        "avatarBase64": { "type": "string", "description": "Optional compressed Base64 avatar." },
+        "discoverable": { "type": "boolean", "description": "Whether user appears in directory search." },
+        "isOnline": { "type": "boolean", "description": "Live presence indicator." },
+        "lastSeen": { "type": "string", "format": "date-time", "description": "Last seen server timestamp." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation server timestamp." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Update server timestamp." }
+      },
+      "required": ["userId", "displayName", "searchName", "discoverable", "isOnline", "createdAt", "updatedAt"]
+    },
+    "ChatThread": {
+      "title": "ChatThread",
+      "description": "1-on-1 or Group chat metadata and last message preview.",
+      "type": "object",
+      "properties": {
+        "createdBy": { "type": "string", "description": "UID of user who created the chat." },
+        "participantIds": { "type": "array", "description": "Bounded list (max 50) of member UIDs." },
+        "adminIds": { "type": "array", "description": "Bounded list (max 20) of group admin UIDs." },
+        "isGroup": { "type": "boolean", "description": "True for group chats." },
+        "groupName": { "type": "string", "description": "Optional group title." },
+        "groupIconBase64": { "type": "string", "description": "Optional compressed Base64 group icon." },
+        "participantNames": { "type": "object", "description": "Map of UID to display name." },
+        "participantAvatars": { "type": "object", "description": "Map of UID to avatar URL/data." },
+        "lastMessage": { "type": "string", "description": "Preview text of latest message." },
+        "lastMessageType": { "type": "string", "enum": ["text", "voice", "image", "video", "call"] },
+        "lastMessageSenderId": { "type": "string", "description": "UID of last sender." },
+        "lastMessageAt": { "type": "string", "format": "date-time", "description": "Server timestamp of latest message." },
+        "unreadCounts": { "type": "object", "description": "Map of UID to unread count." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation server timestamp." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Update server timestamp." }
+      },
+      "required": ["createdBy", "participantIds", "adminIds", "isGroup", "lastMessage", "lastMessageType", "lastMessageAt", "createdAt", "updatedAt"]
+    },
+    "ChatMessage": {
+      "title": "ChatMessage",
+      "description": "Message inside a chat thread (text, voice note, photo, video preview, call event).",
+      "type": "object",
+      "properties": {
+        "chatId": { "type": "string", "description": "Parent chat document ID." },
+        "senderId": { "type": "string", "description": "UID of message sender." },
+        "senderName": { "type": "string", "description": "Sender display name." },
+        "participantIds": { "type": "array", "description": "Denormalized member UIDs for flat rule evaluation." },
+        "type": { "type": "string", "enum": ["text", "voice", "image", "video", "call"] },
+        "text": { "type": "string", "description": "Text content or caption." },
+        "mediaPayload": { "type": "string", "description": "Optional Base64-encoded compressed image or AAC voice audio." },
+        "mediaDurationMs": { "type": "integer", "description": "Duration in ms for voice/video." },
+        "replyToId": { "type": "string", "description": "Optional replied message ID." },
+        "replyPreview": { "type": "string", "description": "Optional snippet of replied message." },
+        "reactions": { "type": "object", "description": "Map of userId to emoji reaction." },
+        "readBy": { "type": "array", "description": "Bounded list of UIDs who read the message." },
+        "isDeleted": { "type": "boolean", "description": "Soft-deleted flag." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp." }
+      },
+      "required": ["chatId", "senderId", "senderName", "participantIds", "type", "text", "isDeleted", "readBy", "createdAt", "updatedAt"]
+    },
+    "StatusStory": {
+      "title": "StatusStory",
+      "description": "24-hour text or photo status update.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Author UID." },
+        "userName": { "type": "string", "description": "Author display name." },
+        "userAvatar": { "type": "string", "description": "Optional author avatar." },
+        "type": { "type": "string", "enum": ["text", "image"] },
+        "text": { "type": "string", "description": "Status text or caption." },
+        "backgroundHex": { "type": "string", "description": "Background color hex for text status." },
+        "imageBase64": { "type": "string", "description": "Optional compressed Base64 status image." },
+        "viewerIds": { "type": "array", "description": "List of UIDs who viewed this status." },
+        "isActive": { "type": "boolean", "description": "Active status flag." },
+        "expiresAtEpochMs": { "type": "integer", "description": "Expiration timestamp in epoch ms." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp." }
+      },
+      "required": ["userId", "userName", "type", "text", "backgroundHex", "viewerIds", "isActive", "expiresAtEpochMs", "createdAt", "updatedAt"]
+    },
+    "CallSession": {
+      "title": "CallSession",
+      "description": "WebRTC audio/video call signaling state and call log record.",
+      "type": "object",
+      "properties": {
+        "callerId": { "type": "string", "description": "Caller UID." },
+        "callerName": { "type": "string", "description": "Caller display name." },
+        "callerAvatar": { "type": "string", "description": "Optional caller avatar." },
+        "calleeId": { "type": "string", "description": "Callee UID." },
+        "calleeName": { "type": "string", "description": "Callee display name." },
+        "calleeAvatar": { "type": "string", "description": "Optional callee avatar." },
+        "participantIds": { "type": "array", "description": "2-element list [callerId, calleeId]." },
+        "callType": { "type": "string", "enum": ["audio", "video"] },
+        "status": { "type": "string", "enum": ["ringing", "accepted", "declined", "ended", "missed"] },
+        "offerSdp": { "type": "string", "description": "WebRTC SDP Offer." },
+        "answerSdp": { "type": "string", "description": "WebRTC SDP Answer." },
+        "durationSeconds": { "type": "integer", "description": "Connected call duration in seconds." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp." }
+      },
+      "required": ["callerId", "callerName", "calleeId", "calleeName", "participantIds", "callType", "status", "durationSeconds", "createdAt", "updatedAt"]
+    },
+    "IceCandidateRecord": {
+      "title": "IceCandidateRecord",
+      "description": "WebRTC ICE candidate signaling message.",
+      "type": "object",
+      "properties": {
+        "senderId": { "type": "string", "description": "UID of candidate sender." },
+        "participantIds": { "type": "array", "description": "2-element list [callerId, calleeId]." },
+        "sdpMid": { "type": "string", "description": "Media stream ID." },
+        "sdpMLineIndex": { "type": "integer", "description": "Media line index." },
+        "candidate": { "type": "string", "description": "ICE candidate SDP string." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp." }
+      },
+      "required": ["senderId", "participantIds", "sdpMid", "sdpMLineIndex", "candidate", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Private user profiles isolated to each authenticated owner."
+    },
+    "/userDirectory/{userId}": {
+      "schema": { "$ref": "#/entities/DirectoryUser" },
+      "description": "Publicly discoverable non-PII user profiles for starting chats and calls."
+    },
+    "/chats/{chatId}": {
+      "schema": { "$ref": "#/entities/ChatThread" },
+      "description": "1-on-1 and group chat threads scoped to participantIds."
+    },
+    "/chats/{chatId}/messages/{messageId}": {
+      "schema": { "$ref": "#/entities/ChatMessage" },
+      "description": "Messages belonging to a chat thread."
+    },
+    "/statuses/{statusId}": {
+      "schema": { "$ref": "#/entities/StatusStory" },
+      "description": "24-hour user status updates."
+    },
+    "/calls/{callId}": {
+      "schema": { "$ref": "#/entities/CallSession" },
+      "description": "WebRTC call signaling sessions and call logs."
+    },
+    "/calls/{callId}/callerCandidates/{candidateId}": {
+      "schema": { "$ref": "#/entities/IceCandidateRecord" },
+      "description": "Caller ICE candidates for WebRTC negotiation."
+    },
+    "/calls/{callId}/calleeCandidates/{candidateId}": {
+      "schema": { "$ref": "#/entities/IceCandidateRecord" },
+      "description": "Callee ICE candidates for WebRTC negotiation."
+    }
+  }
+}

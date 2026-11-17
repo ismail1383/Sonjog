@@ -1,0 +1,6 @@
+{
+  "name": "সংযোগ (Songjog)",
+  "description": "বাংলা ও ইংরেজি সমর্থিত আধুনিক হোয়াটসঅ্যাপ-সদৃশ রিয়েল-টাইম চ্যাট, ভয়েস নোট, স্ট্যাটাস ও অডিও-ভিডিও কলিং অ্যাপ",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
